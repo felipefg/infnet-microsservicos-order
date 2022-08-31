@@ -1,0 +1,4 @@
+fastapi~=0.80.0
+uvicorn
+pika
+requests
