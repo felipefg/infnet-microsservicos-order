@@ -2,7 +2,13 @@ import pika
 
 from orders import Order
 
-ON_ORDER_CREATED = "orderCreated"
+EXCHANGE_NAME = "FTGO"
+
+SERVICE_NAME = "order"
+
+# Event Types
+ORDER_CREATED = "orderCreated"
+ORDER_CANCELLED = "orderCancelled"
 
 
 def connect():
@@ -10,7 +16,7 @@ def connect():
         pika.ConnectionParameters(host="localhost")
     )
     channel = connection.channel()
-    channel.queue_declare(ON_ORDER_CREATED)
+    channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic")
 
     return connection, channel
 
@@ -20,7 +26,15 @@ CONNECTION, CHANNEL = connect()
 
 def emit_order_created(order: Order):
     CHANNEL.basic_publish(
-        exchange='',
-        routing_key=ON_ORDER_CREATED,
+        exchange=EXCHANGE_NAME,
+        routing_key=f'{SERVICE_NAME}.{ORDER_CREATED}',
+        body=order.json()
+    )
+
+
+def emit_order_cancelled(order: Order):
+    CHANNEL.basic_publish(
+        exchange=EXCHANGE_NAME,
+        routing_key=f'{SERVICE_NAME}.{ORDER_CANCELLED}',
         body=order.json()
     )

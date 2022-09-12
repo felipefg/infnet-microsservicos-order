@@ -58,6 +58,8 @@ async def update_order(order_id: str, new_status_req: UpdateOrderRequest):
         )
 
     order.status = new_status_req.status
-    # TODO: Enviar OrderUpdated
+
+    if order.status == orders.OrderStatus.cancelled:
+        producer.emit_order_cancelled(order)
 
     return order
