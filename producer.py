@@ -1,6 +1,7 @@
 import pika
 
 from orders import Order
+from config import settings
 
 EXCHANGE_NAME = "FTGO"
 
@@ -13,7 +14,7 @@ ORDER_CANCELLED = "orderCancelled"
 
 def connect():
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host="localhost")
+        pika.ConnectionParameters(host=settings.rabbitmq_host)
     )
     channel = connection.channel()
     channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic")
