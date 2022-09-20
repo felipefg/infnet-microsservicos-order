@@ -1,0 +1,23 @@
+---
+version: "3"
+
+services:
+  order:
+    image: "order"
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=1234
+    volumes:
+      - $PWD:/code
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    environment:
+        RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit heartbeat 600"
+
